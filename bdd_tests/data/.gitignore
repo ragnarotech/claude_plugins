@@ -1,0 +1,3 @@
+# Ignore actual data files (tracked by DVC)
+*.json
+!*_schema.json

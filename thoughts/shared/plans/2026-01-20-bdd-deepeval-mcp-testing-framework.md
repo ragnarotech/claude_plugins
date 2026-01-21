@@ -443,10 +443,10 @@ def set_default_threshold(test_context, threshold):
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] Project structure created: `ls -la bdd_tests/`
-- [ ] Dependencies install cleanly: `cd bdd_tests && pip install -e .`
-- [ ] Pytest discovers tests: `pytest --collect-only`
-- [ ] Agent wrapper instantiates without errors: `python -c "from src.agent_wrapper import PydanticAITestWrapper"`
+- [x] Project structure created: `ls -la bdd_tests/`
+- [x] Dependencies install cleanly: `cd bdd_tests && pip install -e .`
+- [x] Pytest discovers tests: `pytest --collect-only`
+- [x] Agent wrapper instantiates without errors: `python -c "from src.agent_wrapper import PydanticAITestWrapper"`
 
 #### Manual Verification:
 - [ ] Confirm agent_instance fixture points to your actual Pydantic AI agent (replace placeholder)
