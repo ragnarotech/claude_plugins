@@ -875,9 +875,9 @@ Feature: MCP Tool Verification
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] MCP steps load without import errors: `python -c "from tests.step_defs.mcp_steps import *"`
-- [ ] Feature file parses correctly: `pytest --collect-only tests/step_defs/mcp_steps.py`
-- [ ] MCPToolVerifier unit tests pass: `pytest tests/test_mcp_verifier.py -v` (add unit tests)
+- [x] MCP steps load without import errors: `python -c "from tests.step_defs.mcp_steps import *"`
+- [x] Feature file parses correctly: `pytest --collect-only tests/step_defs/mcp_steps.py`
+- [x] MCPToolVerifier unit tests pass: `pytest tests/test_mcp_verifier.py -v` (add unit tests)
 
 #### Manual Verification:
 - [ ] Run a single MCP scenario against your actual agent
