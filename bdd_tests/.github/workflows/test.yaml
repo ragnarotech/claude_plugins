@@ -1,0 +1,81 @@
+name: BDD DeepEval Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * *'  # Daily at 3 AM UTC
+
+jobs:
+  test-local:
+    name: Run Local Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd bdd_tests
+          pip install -e .
+
+      - name: Run tests (mock mode)
+        run: |
+          cd bdd_tests
+          pytest tests/ -v -m "not integration" --junitxml=results/junit.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: bdd_tests/results/
+
+  test-kubernetes:
+    name: Run Kubernetes Tests
+    runs-on: ubuntu-latest
+    needs: test-local
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+
+      - name: Build and push test image
+        run: |
+          cd bdd_tests
+          docker build -t ${{ secrets.REGISTRY }}/bdd-deepeval-tests:${{ github.sha }} .
+          docker push ${{ secrets.REGISTRY }}/bdd-deepeval-tests:${{ github.sha }}
+
+      - name: Deploy test job
+        run: |
+          cd bdd_tests
+          # Substitute environment variables
+          export GIT_COMMIT=${{ github.sha }}
+          export GIT_BRANCH=${{ github.ref_name }}
+          envsubst < k8s/test-job.yaml | kubectl apply -f -
+
+      - name: Wait for job completion
+        run: |
+          kubectl wait --for=condition=complete job/bdd-deepeval-tests --timeout=1800s &
+          completion_pid=$!
+          kubectl wait --for=condition=failed job/bdd-deepeval-tests --timeout=1800s && exit 1 &
+          failure_pid=$!
+
+          # Stream logs while waiting
+          kubectl logs -f job/bdd-deepeval-tests &
+
+          wait -n $completion_pid $failure_pid
+
+      - name: Cleanup
+        if: always()
+        run: |
+          kubectl delete job bdd-deepeval-tests --ignore-not-found
