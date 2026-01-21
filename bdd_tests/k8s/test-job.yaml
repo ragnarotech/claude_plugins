@@ -1,0 +1,84 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bdd-deepeval-tests
+  labels:
+    app: bdd-tests
+    test-type: integration
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 1800  # 30 minute timeout
+  ttlSecondsAfterFinished: 3600  # Cleanup after 1 hour
+  template:
+    metadata:
+      labels:
+        app: bdd-tests
+    spec:
+      restartPolicy: Never
+      serviceAccountName: test-runner
+
+      containers:
+      - name: pytest-runner
+        image: your-registry/bdd-deepeval-tests:latest
+        imagePullPolicy: Always
+
+        command: ["pytest"]
+        args:
+          - "tests/"
+          - "-v"
+          - "--tb=short"
+          - "--junitxml=/results/junit.xml"
+          - "-m"
+          - "not slow"
+
+        env:
+        # S3 test data access
+        - name: TEST_DATA_BUCKET
+          value: "your-test-data-bucket"
+        - name: AWS_REGION
+          value: "us-east-1"
+
+        # Elasticsearch reporting
+        - name: ES_HOST
+          value: "elasticsearch.monitoring:9200"
+        - name: ES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: username
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+
+        # OpenAI API for DeepEval metrics
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-credentials
+              key: api-key
+
+        # Git metadata for reporting
+        - name: GIT_COMMIT
+          value: "${GIT_COMMIT}"
+        - name: GIT_BRANCH
+          value: "${GIT_BRANCH}"
+        - name: TEST_ENV
+          value: "kubernetes"
+
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+
+        volumeMounts:
+        - name: results
+          mountPath: /results
+
+      volumes:
+      - name: results
+        emptyDir: {}

@@ -128,7 +128,73 @@ def load_expected_output(data_loader):
     return _load
 
 
-# Elasticsearch reporting hook (configured in Phase 6)
+# Elasticsearch reporting (Phase 6)
+from src.elk_reporter import DeepEvalResultReporter
+
+
+# Global reporter instance
+_elk_reporter: DeepEvalResultReporter | None = None
+
+
+def get_elk_reporter() -> DeepEvalResultReporter | None:
+    """Get or create ELK reporter if configured."""
+    global _elk_reporter
+
+    if _elk_reporter is None and os.environ.get("ES_HOST"):
+        _elk_reporter = DeepEvalResultReporter()
+
+    return _elk_reporter
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Hook to report test results to Elasticsearch.
+
+    Captures test outcome and DeepEval metrics.
+    """
+    outcome = yield
+    report = outcome.get_result()
+
+    # Only report on test completion (not setup/teardown)
+    if report.when != "call":
+        return
+
+    reporter = get_elk_reporter()
+    if reporter is None:
+        return
+
+    # Extract test context if available
+    test_context = getattr(item, "_test_context", {})
+
+    # Extract metrics from test context
+    metrics = test_context.get("metrics", {})
+
+    # Extract tool calls
+    tool_calls = []
+    if test_context.get("tool_calls"):
+        tool_calls = [tc.name for tc in test_context["tool_calls"]]
+
+    reporter.report_test_result(
+        test_id=item.nodeid,
+        test_name=item.name,
+        outcome=report.outcome,
+        duration=report.duration,
+        metrics=metrics,
+        tool_calls=tool_calls,
+        test_context=test_context,
+        error_message=str(report.longrepr) if report.failed else None,
+    )
+
+
+@pytest.fixture(autouse=True)
+def capture_test_context(request, test_context):
+    """Capture test context for ELK reporting."""
+    yield
+    # Store context on the test item for the hook to access
+    request.node._test_context = test_context
+
+
 @pytest.fixture(scope="session", autouse=True)
 def configure_elk_session(request):
     """Add session metadata to ELK reports if configured."""

@@ -2141,9 +2141,9 @@ def capture_test_context(request, test_context):
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] ELK reporter imports: `python -c "from src.elk_reporter import DeepEvalResultReporter"`
-- [ ] Index creation works with local Elasticsearch
-- [ ] Test results are indexed correctly
+- [x] ELK reporter imports: `python -c "from src.elk_reporter import DeepEvalResultReporter"`
+- [x] Index creation works with local Elasticsearch
+- [x] Test results are indexed correctly
 
 #### Manual Verification:
 - [ ] Run tests with ES_HOST set and verify documents appear in Elasticsearch
@@ -2406,9 +2406,9 @@ jobs:
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] Dockerfile builds: `docker build -t bdd-tests:test bdd_tests/`
-- [ ] Kubernetes manifests are valid: `kubectl apply --dry-run=client -f bdd_tests/k8s/`
-- [ ] GitHub Actions workflow syntax is valid
+- [x] Dockerfile builds: `docker build -t bdd-tests:test bdd_tests/`
+- [x] Kubernetes manifests are valid: `kubectl apply --dry-run=client -f bdd_tests/k8s/`
+- [x] GitHub Actions workflow syntax is valid
 
 #### Manual Verification:
 - [ ] Deploy to test Kubernetes cluster and verify job runs
