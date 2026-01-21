@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "test_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "input"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique test case identifier"
+          },
+          "input": {
+            "type": "string",
+            "description": "User prompt/input"
+          },
+          "mock_date": {
+            "type": "string",
+            "description": "Mock current date (e.g., '1/7/2025')"
+          },
+          "expected_tool": {
+            "type": "string",
+            "description": "Expected MCP tool to be called"
+          },
+          "expected_params": {
+            "type": "object",
+            "description": "Expected tool parameters"
+          },
+          "expected_output": {
+            "type": "string",
+            "description": "Expected agent response (for comparison)"
+          },
+          "retrieval_context": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Context for faithfulness evaluation"
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Test tags for filtering"
+          }
+        }
+      }
+    }
+  }
+}

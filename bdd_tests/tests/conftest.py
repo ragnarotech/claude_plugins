@@ -92,6 +92,42 @@ def configure_environment():
     yield
 
 
+# Data loading fixtures (Phase 5)
+from src.data_loader import TestDataLoader, get_data_loader
+
+
+@pytest.fixture(scope="session")
+def data_loader():
+    """Session-scoped test data loader."""
+    return get_data_loader()
+
+
+@pytest.fixture
+def load_test_cases(data_loader):
+    """
+    Factory fixture to load test cases by dataset name.
+
+    Usage in steps:
+        test_cases = load_test_cases("weather_scenarios")
+    """
+    def _load(dataset_name: str):
+        return data_loader.load_test_cases(dataset_name)
+    return _load
+
+
+@pytest.fixture
+def load_expected_output(data_loader):
+    """
+    Factory fixture to load expected output by test ID.
+
+    Usage in steps:
+        expected = load_expected_output("weather_001")
+    """
+    def _load(test_id: str, dataset_name: str = "expected_outputs"):
+        return data_loader.load_expected_output(test_id, dataset_name)
+    return _load
+
+
 # Elasticsearch reporting hook (configured in Phase 6)
 @pytest.fixture(scope="session", autouse=True)
 def configure_elk_session(request):

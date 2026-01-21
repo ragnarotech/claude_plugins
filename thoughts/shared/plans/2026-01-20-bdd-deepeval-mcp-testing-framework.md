@@ -1130,9 +1130,9 @@ Feature: Conversational MCP Tool Usage
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] Conversation steps load: `python -c "from tests.step_defs.conversation_steps import *"`
-- [ ] Feature file parses: `pytest --collect-only tests/step_defs/conversation_steps.py`
-- [ ] Turn tracking works correctly (unit test)
+- [x] Conversation steps load: `python -c "from tests.step_defs.conversation_steps import *"`
+- [x] Feature file parses: `pytest --collect-only tests/step_defs/conversation_steps.py`
+- [x] Turn tracking works correctly (unit test)
 
 #### Manual Verification:
 - [ ] Run the "Agent asks for location" scenario against your actual agent
@@ -1476,9 +1476,9 @@ Feature: DeepEval Quality Metrics
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] DeepEval steps load: `python -c "from tests.step_defs.deepeval_steps import *"`
-- [ ] Feature file parses: `pytest --collect-only tests/step_defs/deepeval_steps.py`
-- [ ] Metrics record to pytest properties
+- [x] DeepEval steps load: `python -c "from tests.step_defs.deepeval_steps import *"`
+- [x] Feature file parses: `pytest --collect-only tests/step_defs/deepeval_steps.py`
+- [x] Metrics record to pytest properties
 
 #### Manual Verification:
 - [ ] Run a metric scenario with valid OPENAI_API_KEY
@@ -1849,10 +1849,10 @@ outs:
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] DVC initializes: `cd bdd_tests && dvc init`
-- [ ] Data loader imports: `python -c "from src.data_loader import TestDataLoader"`
-- [ ] Local data loading works: Create sample `data/test_cases.json` and load it
-- [ ] S3 loading works with TEST_DATA_BUCKET set (integration test)
+- [x] DVC initializes: `cd bdd_tests && dvc init`
+- [x] Data loader imports: `python -c "from src.data_loader import TestDataLoader"`
+- [x] Local data loading works: Create sample `data/test_cases.json` and load it
+- [x] S3 loading works with TEST_DATA_BUCKET set (integration test)
 
 #### Manual Verification:
 - [ ] Configure DVC remote: `dvc remote add -d s3remote s3://your-bucket/dvc-cache`

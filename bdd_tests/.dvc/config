@@ -1,0 +1,5 @@
+[core]
+    remote = s3remote
+[remote "s3remote"]
+    url = s3://your-bucket-name/dvc-cache
+    region = us-east-1

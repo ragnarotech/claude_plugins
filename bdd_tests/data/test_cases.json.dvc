@@ -1,0 +1,5 @@
+outs:
+- md5: abc123def456...
+  size: 12345
+  hash: md5
+  path: test_cases.json
