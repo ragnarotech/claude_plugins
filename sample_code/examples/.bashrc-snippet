@@ -1,0 +1,22 @@
+# ============================================================================
+# Claude Code Launcher
+# ============================================================================
+# Add this to your ~/.bashrc to enable the 'claude-code' command.
+# This is automatically added by install.sh, but can be added manually.
+# ============================================================================
+
+# Claude Code Launcher
+alias claude-code="${HOME}/.claude-launcher/bootstrap.sh"
+
+# Optional: Configure backend host (uncomment and set your endpoint)
+# export CLAUDE_BACKEND_HOST="inference.internal.domain"
+# export CLAUDE_BACKEND_PORT="443"
+
+# Optional: Custom certificate directory (default: ~/certificates)
+# export CLAUDE_CERT_DIR="${HOME}/certificates"
+
+# Optional: Auto-update without prompting
+# export CLAUDE_LAUNCHER_AUTO_UPDATE="true"
+
+# Optional: Check for updates once per day instead of every launch
+# export CLAUDE_LAUNCHER_UPDATE_CHECK_INTERVAL="86400"

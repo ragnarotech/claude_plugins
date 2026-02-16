@@ -14,10 +14,13 @@ set -euo pipefail
 # - Node.js and npm (for Claude Code installation)
 # ============================================================================
 
+# Script Version
+SCRIPT_VERSION="1.0.0"
+
 # Configuration
 BACKEND_HOST="${CLAUDE_BACKEND_HOST:-inference.internal.domain}"
 BACKEND_PORT="${CLAUDE_BACKEND_PORT:-443}"
-CERT_DIR="${HOME}/certificates"
+CERT_DIR="${CLAUDE_CERT_DIR:-${HOME}/certificates}"
 CERT_FILE="${CERT_DIR}/${USER}.crt"
 KEY_FILE="${CERT_DIR}/${USER}.key"
 TEMP_DIR=""
