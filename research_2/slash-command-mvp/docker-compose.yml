@@ -1,0 +1,63 @@
+# DECISION: docker-compose for local development orchestration.
+# Why: Single command to start all 3 services with correct networking.
+# Production: Helm chart + Kubernetes. Each service becomes a Deployment +
+#   Service + optional HPA. Inter-service comms via ClusterIP services.
+# Alternative: Considered docker-compose v3 with Swarm (rejected: K8s is the target).
+
+version: '3.9'
+
+services:
+  prompt-registry:
+    build:
+      context: ./prompt-registry
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./prompt-registry/src/skills:/app/src/skills:ro
+      - registry-data:/app/data
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/commands.db
+      - SKILLS_DIR=/app/src/skills
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  agent-middleware:
+    build:
+      context: ./agent-middleware
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      prompt-registry:
+        condition: service_healthy
+    environment:
+      - REGISTRY_URL=http://prompt-registry:8001
+      - LLM_MODEL=claude-sonnet-4-5-20250929
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      agent-middleware:
+        condition: service_healthy
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_REGISTRY_URL=http://localhost:8001
+
+volumes:
+  registry-data:
